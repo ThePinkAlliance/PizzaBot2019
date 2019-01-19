@@ -14,7 +14,7 @@ import frc.robot.commands.JoystickDrive;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.Faults;
+
 
 /**
  * Add your docs here.
@@ -48,8 +48,8 @@ public class DriveTrain extends Subsystem {
   private WPI_TalonSRX _rightRear = null;
   private WPI_TalonSRX _leftFront = null;
   private WPI_TalonSRX _leftRear = null;
-  private Faults _faults_L = new Faults();
-  private Faults _faults_R = new Faults();
+  //private Faults _faults_L = new Faults();
+  //private Faults _faults_R = new Faults();
   private DifferentialDrive _diffDrive = null;
   private double _governor = 1.0;
 
@@ -71,8 +71,8 @@ public class DriveTrain extends Subsystem {
     _leftFront.setInverted(true);
     _rightRear.setInverted(false);
     _leftRear.setInverted(true);
-    _faults_L = new Faults();
-    _faults_R = new Faults();
+    //_faults_L = new Faults();
+    //_faults_R = new Faults();
     _rightRear.set(ControlMode.Follower, ESC_FRONT_RIGHT);
     _leftRear.set(ControlMode.Follower, ESC_FRONT_LEFT);
 
