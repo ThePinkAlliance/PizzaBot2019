@@ -18,9 +18,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * SmartDashboard.
  */
 public class RobotDashboard {
-    public static final String ENC_LABEL_RIGHT_FRONT = "Right Front Distance(in)  ";
-    public static final String ENC_LABEL_LEFT_FRONT  = "Left Front Distance(in)   ";
-    public static final String ENC_LABEL_FRONT       = "Front Distance Average(in)";
+    public static final String ENC_LABEL_RIGHT_FRONT =  "Right Front Distance(in)  ";
+    public static final String ENC_LABEL_LEFT_FRONT  =  "Left Front Distance(in)   ";
+    public static final String ENC_LABEL_FRONT       =  "Front Distance Average(in)";
     
     private boolean bDisplayContinuousData = true;
 
