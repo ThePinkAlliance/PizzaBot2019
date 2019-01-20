@@ -8,6 +8,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.commands.EncoderBasedDrive;
 
 /**
  * RobotDashboard: helper class to encapsulate displaying data to the dashboard.
@@ -18,9 +19,18 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * SmartDashboard.
  */
 public class RobotDashboard {
+    //Encoder data
     public static final String ENC_LABEL_RIGHT_FRONT =  "Right Front Distance(in)  ";
     public static final String ENC_LABEL_LEFT_FRONT  =  "Left Front Distance(in)   ";
     public static final String ENC_LABEL_FRONT       =  "Front Distance Average(in)";
+
+    //PID for EncoderBasedDrive
+    public static final String DT_ENC_PID_DISTANCE     = "DT_ENC_PID_DISTANCE";
+    public static final String DT_ENC_PID_MAX_OUTPUT   = "DT_ENC_PID_OUTPUT";
+    public static final String DT_ENC_Kp = "DT_ENC_Kp";
+    public static final String DT_ENC_Ki = "DT_ENC_Ki";
+    public static final String DT_ENC_Kd = "DT_ENC_Kd";
+
     
     private boolean bDisplayContinuousData = true;
 
@@ -28,8 +38,8 @@ public class RobotDashboard {
      * Constructor:  put values onto dashboard for the first time.
      */
     public RobotDashboard() {
-       
-       displayEncoderValues();
+        //Handle initial values to seed the dashboard
+        displayInitialValues();
     }
 
     /**
@@ -58,6 +68,48 @@ public class RobotDashboard {
             SmartDashboard.putNumber(ENC_LABEL_LEFT_FRONT, Robot.m_driveTrain.getFrontLeftDistance());
             SmartDashboard.putNumber(ENC_LABEL_FRONT, Robot.m_driveTrain.getFrontDistanceAverage());
         }
+    }
+
+    /**
+     * Display DriveTrain Encoder PID values
+     */
+    public void displayDriveTrainEncoderPIDValues() {
+        //DriveTrain subsystem
+        if (Robot.m_driveTrain != null) {
+            SmartDashboard.putNumber(DT_ENC_PID_DISTANCE, EncoderBasedDrive.CMD_DEFAULT_DISTANCE);
+            SmartDashboard.putNumber(DT_ENC_PID_MAX_OUTPUT, EncoderBasedDrive.CMD_MAX_OUTPUT);
+            SmartDashboard.putNumber(DT_ENC_Kp, EncoderBasedDrive.CMD_Kp);
+            SmartDashboard.putNumber(DT_ENC_Ki, EncoderBasedDrive.CMD_Ki);
+            SmartDashboard.putNumber(DT_ENC_Kd, EncoderBasedDrive.CMD_Kd);
+        }
+    }
+
+    /**
+     * Grab the DriveTrain Encoder PID values from the Dashboard and set them 
+     * on the drive train
+     */
+    public void getDriveTrainEncoderPIDValues() {
+        //DriveTrain subsystem
+        if (Robot.m_driveTrain != null) {
+            Robot.m_driveTrain.setEncKp(SmartDashboard.getNumber(DT_ENC_Kp, EncoderBasedDrive.CMD_Kp));
+            Robot.m_driveTrain.setEncKi(SmartDashboard.getNumber(DT_ENC_Ki, EncoderBasedDrive.CMD_Ki));
+            Robot.m_driveTrain.setEncKd(SmartDashboard.getNumber(DT_ENC_Kd, EncoderBasedDrive.CMD_Kd));
+        }
+    }
+
+    /**
+     * Grabs values from the dashboard on a continuous basis (telelop / autonomous)
+     */
+    public void getContinuousData() {
+        getDriveTrainEncoderPIDValues();
+    }
+
+    /**
+     * Prints one time values to the dashboard to establish the widget
+     */
+    public void displayInitialValues() {
+        displayDriveTrainEncoderPIDValues();
+        displayEncoderValues();
     }
 
     /**

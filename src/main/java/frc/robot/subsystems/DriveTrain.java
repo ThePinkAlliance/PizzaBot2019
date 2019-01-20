@@ -57,8 +57,9 @@ public class DriveTrain extends Subsystem {
   private Encoder _enc_leftFront = null;
   private Encoder _enc_rightRear = null;
   private Encoder _enc_rightFront = null;
-
-
+  private double  _enc_Kp = 1.0;
+  private double  _enc_Ki = 0.0;
+  private double  _enc_Kd = 0.0;
 
   public DriveTrain() {
 
@@ -108,6 +109,10 @@ public class DriveTrain extends Subsystem {
     return this._governor;
   }
 
+  public void stopDriveTrain() {
+    _diffDrive.tankDrive(0,0);
+  }
+
   public void resetEncoders() {
     if (_enc_leftFront != null)
       _enc_leftFront.reset();
@@ -151,7 +156,35 @@ public class DriveTrain extends Subsystem {
     return (double)((left + right) / 2.0);
   }
 
-  public void tankDrive(double left, double right) {
+  public void setEncKp(double value) {
+    this._enc_Kp = value;
+  }
+
+  public void setEncKi(double value) {
+    this._enc_Ki = value;
+  }
+
+  public void setEncKd(double value) {
+    this._enc_Kd = value;
+  }
+
+  public double getEncKp() {
+    return this._enc_Kp;
+  }
+
+  public double getEncKi() {
+    return this._enc_Ki;
+  }
+
+  public double getEncKd() {
+    return this._enc_Kd;
+  }
+
+  public void tankDriveByEncoder(double left, double right) {
+    
+		_diffDrive.tankDrive(left, right);
+	}
+  public void tankDriveByJoystick(double left, double right) {
     //System.out.println("Left: " + leftSpeed + " <===>  Right: " + rightSpeed);
     //For this setup (ESC forward green), If LEFT negative make positive, if positive make negative
     //For this setup (ESC forward green), If RIGHT positive make negative, if negative make positive

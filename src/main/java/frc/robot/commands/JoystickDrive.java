@@ -8,13 +8,17 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.GenericHID.Hand;
+import edu.wpi.first.wpilibj.Joystick.ButtonType;
 import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.Joystick;
+import frc.robot.OI;
 import frc.robot.Robot;
+import frc.robot.RobotDashboard;
 
 public class JoystickDrive extends Command {
 
-  private XboxController js = null; 
+  private Joystick js = null; 
   
   /**
    * Constructor: needs require and sets the member js so that it can be used
@@ -61,9 +65,10 @@ public class JoystickDrive extends Command {
    */
   public void HandleTankDrive() {
     if (js != null) {
-      double left = js.getY(Hand.kLeft);
-      double right =  js.getY(Hand.kRight);
-      Robot.m_driveTrain.tankDrive(left, right);
+      double left = js.getRawAxis(OI.leftStick);//js.getY(Hand.kLeft);
+      double right =  js.getRawAxis(OI.rightStick);//js.getY(Hand.kRight);
+      //System.out.println("LEFT: " + left + " RIGHT: " + right);
+      Robot.m_driveTrain.tankDriveByJoystick(left, right);
     }
   }
   
@@ -73,8 +78,16 @@ public class JoystickDrive extends Command {
   public void HandleButtons() {
     if (js != null) {
       //Reset Encoders
-      if (js.getXButtonPressed()) {
+      if (js.getRawButtonPressed(OI.xButtonNumber)) {
         Robot.m_driveTrain.resetEncoders();
+      }
+      
+      if (js.getRawButtonPressed(OI.aButtonNumber)) {
+        EncoderBasedDrive testCmd = new EncoderBasedDrive(
+          SmartDashboard.getNumber(RobotDashboard.DT_ENC_PID_DISTANCE, 30), 
+          10, 
+          SmartDashboard.getNumber(RobotDashboard.DT_ENC_PID_MAX_OUTPUT, 1));
+        testCmd.start();
       }
     }
   }

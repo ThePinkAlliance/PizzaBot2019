@@ -117,6 +117,7 @@ public class Robot extends TimedRobot {
     Scheduler.getInstance().run();
 
     m_rDashboard.displayContinuousData();
+    m_rDashboard.getContinuousData();
   }
 
   @Override
@@ -138,6 +139,7 @@ public class Robot extends TimedRobot {
     Scheduler.getInstance().run();
 
     m_rDashboard.displayContinuousData();
+    m_rDashboard.getContinuousData();
   }
 
   /**
