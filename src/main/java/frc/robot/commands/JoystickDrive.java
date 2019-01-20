@@ -7,8 +7,6 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.GenericHID.Hand;
-import edu.wpi.first.wpilibj.Joystick.ButtonType;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Joystick;
@@ -81,7 +79,7 @@ public class JoystickDrive extends Command {
       if (js.getRawButtonPressed(OI.xButtonNumber)) {
         Robot.m_driveTrain.resetEncoders();
       }
-      
+
       if (js.getRawButtonPressed(OI.aButtonNumber)) {
         EncoderBasedDrive testCmd = new EncoderBasedDrive(
           SmartDashboard.getNumber(RobotDashboard.DT_ENC_PID_DISTANCE, 30), 
