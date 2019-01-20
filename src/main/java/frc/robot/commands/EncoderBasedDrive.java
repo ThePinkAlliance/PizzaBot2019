@@ -19,7 +19,7 @@ public class EncoderBasedDrive extends Command implements PIDSource, PIDOutput {
 
   
   public static final double CMD_TOLERANCE        = 1.0;
-  public static final double CMD_Kp               = 1.0;
+  public static final double CMD_Kp               = 0.33;
   public static final double CMD_Ki               = 0.0;
   public static final double CMD_Kd               = 0.0;
   public static final double CMD_MAX_OUTPUT       = 1.0;
