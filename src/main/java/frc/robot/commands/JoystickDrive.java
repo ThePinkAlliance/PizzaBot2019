@@ -81,7 +81,7 @@ public class JoystickDrive extends Command {
       }
 
       if (js.getRawButtonPressed(OI.aButtonNumber)) {
-        EncoderBasedDrive testCmd = new EncoderBasedDrive(
+        EncoderBasedDrive2PIDController testCmd = new EncoderBasedDrive2PIDController(
           SmartDashboard.getNumber(RobotDashboard.DT_ENC_PID_DISTANCE, 30), 
           10, 
           SmartDashboard.getNumber(RobotDashboard.DT_ENC_PID_MAX_OUTPUT, 1));

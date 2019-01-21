@@ -180,6 +180,22 @@ public class DriveTrain extends Subsystem {
     return this._enc_Kd;
   }
 
+  public void rightMotor(double output) {
+    _rightFront.set(output);
+  }
+
+  public void leftMotor(double output) {
+    _leftFront.set(output);
+  }
+
+  public void rightMotorStop() {
+    _rightFront.set(0);
+  }
+
+  public void leftMotorStop() {
+    _leftFront.set(0);
+  }
+
   public void tankDriveByEncoder(double left, double right) {
     
 		_diffDrive.tankDrive(left, right);
