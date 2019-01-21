@@ -135,15 +135,19 @@ public class EncoderBasedDrive2PIDController extends Command {
     if (leftSideDone) {
       pidControllerL.disable();
       Robot.m_driveTrain.leftMotorStop();
+      System.out.println("LEFT: onTarget or traveled far enough: " +
+                         distanceTraveledL);
     } 
 
     if (rightSideDone) {
       pidControllerR.disable();
       Robot.m_driveTrain.rightMotorStop();
+      System.out.println("RIGHT: onTarget or traveled far enough: " +
+                         distanceTraveledR);
     }
     
     if (leftSideDone && rightSideDone) {
-      System.out.println("EncoderBasedDrive2PIDController: onTarget or traveled far enough: " +
+      System.out.println("DONE: onTarget or traveled far enough :" +
                          distanceTraveledL + "/" + distanceTraveledR);
        return true;
     }

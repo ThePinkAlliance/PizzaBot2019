@@ -14,6 +14,7 @@ import frc.robot.commands.JoystickDrive;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 
 /**
@@ -72,6 +73,8 @@ public class DriveTrain extends Subsystem {
     _leftFront.setInverted(true);
     _rightRear.setInverted(false);
     _leftRear.setInverted(true);
+    setNeutralMode(NeutralMode.Brake);
+    
     //_faults_L = new Faults();
     //_faults_R = new Faults();
     _rightRear.set(ControlMode.Follower, ESC_FRONT_RIGHT);
@@ -154,6 +157,21 @@ public class DriveTrain extends Subsystem {
     //Make this more resilient if needed (e.g. base it off of single encoder)
     //in case one of them is null
     return (double)((left + right) / 2.0);
+  }
+
+  /**
+   * Talon SRX specific: neutral modes are Coast or Brake
+   * @param neutralMode
+   */
+  public void setNeutralMode(NeutralMode neutralMode) {
+    if (_leftFront != null)
+      _leftFront.setNeutralMode(neutralMode);
+    if (_leftRear != null)
+      _leftRear.setNeutralMode(neutralMode);
+    if (_rightFront != null)
+      _rightFront.setNeutralMode(neutralMode);
+    if (_rightRear != null)
+      _rightRear.setNeutralMode(neutralMode);
   }
 
   public void setEncKp(double value) {
