@@ -8,6 +8,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import frc.robot.commands.JoystickDrive;
@@ -16,6 +17,8 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
+import com.kauailabs.navx.frc.AHRS;
+
 
 /**
  * Add your docs here.
@@ -23,6 +26,8 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 public class DriveTrain extends Subsystem {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
+
+  public static final String MYNAME = "DriveTrain";
 
   public static final int ESC_FRONT_RIGHT = 3;
   public static final int[] ENC_DIO_FRONT_RIGHT = {4,5};
@@ -62,6 +67,13 @@ public class DriveTrain extends Subsystem {
   private double  _enc_Ki = 0.0;
   private double  _enc_Kd = 0.0;
 
+  private AHRS   _ahrs    = null;
+  private double _navx_Kp = 1.0;
+  private double _navx_Ki = 0.0;
+  private double _navx_Kd = 0.0;
+  public static final double NAVX_BAD_VALUE = -989898.0;
+
+
   public DriveTrain() {
 
     //Motor setup
@@ -94,6 +106,18 @@ public class DriveTrain extends Subsystem {
 
     _diffDrive = new DifferentialDrive(_leftFront, _rightFront);
     _diffDrive.setRightSideInverted(false);
+
+    try {
+      /* Communicate w/navX-MXP via the MXP SPI Bus.                                     */
+      /* Alternatively:  I2C.Port.kMXP, SerialPort.Port.kMXP or SerialPort.Port.kUSB     */
+      /* See http://navx-mxp.kauailabs.com/guidance/selecting-an-interface/ for details. */
+      //Per the link above:  on pizzabot the NavX is connected directly to the roborio so
+      //SPI is the best option.
+      _ahrs = new AHRS(SPI.Port.kMXP); 
+      resetGyro();
+    } catch (RuntimeException ex ) {
+         System.out.println(MYNAME + ": Error instantiating navX-MXP:  " + ex.getMessage());
+    }
     
 
   }
@@ -129,10 +153,10 @@ public class DriveTrain extends Subsystem {
 
   private void SetupEncoder(Encoder enc, String name, boolean reverseDirection) {
     enc.setName(name);
-    System.out.println("Encoder: " + enc.getName());
+    System.out.println(MYNAME + ": Encoder: " + enc.getName());
     enc.setMaxPeriod(.1);
     enc.setMinRate(10);
-    System.out.println("Distance per Pulse: " + DISTANCE_PER_PULSE);
+    System.out.println(MYNAME + ": Distance per Pulse: " + DISTANCE_PER_PULSE);
     enc.setDistancePerPulse(DISTANCE_PER_PULSE);
     enc.setReverseDirection(reverseDirection);
     enc.setSamplesToAverage(7);
@@ -198,6 +222,54 @@ public class DriveTrain extends Subsystem {
     return this._enc_Kd;
   }
 
+  public void setNavxKp(double value) {
+    this._navx_Kp = value;
+  }
+
+  public void setNavxKi(double value) {
+    this._navx_Ki = value;
+  }
+
+  public void setNavxKd(double value) {
+    this._navx_Kd = value;
+  }
+
+  public double getNavxKp() {
+    return this._navx_Kp;
+  }
+
+  public double getNavxKi() {
+    return this._navx_Ki;
+  }
+
+  public double getNavxKd() {
+    return this._navx_Kd;
+  }
+
+  public double getGyroAngle() {
+    if (_ahrs != null)
+       return this._ahrs.getAngle();
+    else
+       return NAVX_BAD_VALUE;
+
+  }
+
+  public double getGyroYaw() {
+    if (_ahrs != null)
+       return this._ahrs.getYaw();
+    else
+       return NAVX_BAD_VALUE;
+  }
+
+  public void resetGyro() {
+    if (_ahrs != null)
+       this._ahrs.reset();
+  }
+
+  public AHRS getNavxPIDSource() {
+    return this._ahrs;
+  }
+
   public void rightMotor(double output) {
     _rightFront.set(output);
   }
@@ -217,7 +289,8 @@ public class DriveTrain extends Subsystem {
   public void tankDriveByEncoder(double left, double right) {
     
 		_diffDrive.tankDrive(left, right);
-	}
+  }
+  
   public void tankDriveByJoystick(double left, double right) {
     //System.out.println("Left: " + leftSpeed + " <===>  Right: " + rightSpeed);
     //For this setup (ESC forward green), If LEFT negative make positive, if positive make negative
@@ -226,9 +299,11 @@ public class DriveTrain extends Subsystem {
     right = right > 0 ? right*-1 : -right;
     //Apply governor for safety.  This brute safety needs to be taken into account
     //by either removing it or using it when tuning PID controllers, etc.
-    double leftGoverned = left * Math.abs(_governor);
-    double rightGoverned = right * Math.abs(_governor);
-    //System.out.println("Left: " + leftGoverned +  " ---    Right: " + rightGoverned);
-		_diffDrive.tankDrive(leftGoverned, rightGoverned);
+    //double leftGoverned = left * Math.abs(_governor);
+    //double rightGoverned = right * Math.abs(_governor);
+    //if (Math.abs(left) > 0.1  || Math.abs(right) > 0.1)
+    //   System.out.println("Left: " + left +  " ---    Right: " + right);
+    
+		_diffDrive.tankDrive(left, right);
 	}
 }

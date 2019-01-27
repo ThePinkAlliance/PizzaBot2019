@@ -65,7 +65,8 @@ public class JoystickDrive extends Command {
     if (js != null) {
       double left = js.getRawAxis(OI.leftStick);//js.getY(Hand.kLeft);
       double right =  js.getRawAxis(OI.rightStick);//js.getY(Hand.kRight);
-      //System.out.println("LEFT: " + left + " RIGHT: " + right);
+      //if (left > 0.3 || right > 0.3)
+      //   System.out.println("LEFT: " + left + " RIGHT: " + right);
       Robot.m_driveTrain.tankDriveByJoystick(left, right);
     }
   }
@@ -80,11 +81,24 @@ public class JoystickDrive extends Command {
         Robot.m_driveTrain.resetEncoders();
       }
 
+      //Reset Gyro
+      if (js.getRawButtonPressed(OI.bButtonNumber)) {
+        Robot.m_driveTrain.resetGyro();
+      }
+
       if (js.getRawButtonPressed(OI.aButtonNumber)) {
         EncoderBasedDrive2PIDController testCmd = new EncoderBasedDrive2PIDController(
-          SmartDashboard.getNumber(RobotDashboard.DT_ENC_PID_DISTANCE, 30), 
+          SmartDashboard.getNumber(RobotDashboard.DT_ENC_PID_DISTANCE, 30.0), 
           10, 
-          SmartDashboard.getNumber(RobotDashboard.DT_ENC_PID_MAX_OUTPUT, 1));
+          SmartDashboard.getNumber(RobotDashboard.DT_ENC_PID_MAX_OUTPUT, 1.0));
+        testCmd.start();
+      }
+
+      if (js.getRawButtonPressed(OI.yButtonNumber)) {
+        DriveStraightByGyro testCmd = new DriveStraightByGyro(
+          SmartDashboard.getNumber(RobotDashboard.DT_ENC_PID_DISTANCE, 30.0), 
+          10, 
+          SmartDashboard.getNumber(RobotDashboard.DT_ENC_PID_MAX_OUTPUT, 1.0));
         testCmd.start();
       }
     }

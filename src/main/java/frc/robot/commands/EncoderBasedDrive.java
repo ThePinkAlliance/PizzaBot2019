@@ -17,12 +17,12 @@ import frc.robot.Robot;
 
 public class EncoderBasedDrive extends Command implements PIDSource, PIDOutput {
 
-  
+  public static final String MYNAME               = "EncoderBasedDrive";
   public static final double CMD_TOLERANCE        = 1.0;
   public static final double CMD_Kp               = 0.33;
   public static final double CMD_Ki               = 0.0;
   public static final double CMD_Kd               = 0.0;
-  public static final double CMD_MAX_OUTPUT       = 1.0;
+  public static final double CMD_MAX_OUTPUT       = 0.45;
   public static final double CMD_MIN_OUTPUT       = 0.0;
   public static final double CMD_DEFAULT_DISTANCE = 30.0;
 
@@ -64,7 +64,7 @@ public class EncoderBasedDrive extends Command implements PIDSource, PIDOutput {
     //Setup the PID Controller to attempt drive by encoder
     setPIDSourceType(PIDSourceType.kDisplacement);  //distance traveled
     pidController = new PIDController(P, I, D, this, this);
-    pidController.setName("EncoderBasedDrive");
+    pidController.setName(MYNAME);
     pidController.setContinuous(false);
     pidController.setAbsoluteTolerance(CMD_TOLERANCE);
     pidController.reset();  //resets previous error, disables controller per doc
@@ -75,10 +75,10 @@ public class EncoderBasedDrive extends Command implements PIDSource, PIDOutput {
     //GO
     pidController.enable();
     //Let the console know...
-    System.out.println("EncoderBasedDrive:  enabled PIDController for distance of: " + distance);
-    System.out.println("EncoderBasedDrive:  Kp: " + P + 
-                                          " Ki: " + I + 
-                                          " Kd: " + D);
+    System.out.println(MYNAME + ": enabled PIDController for distance of: " + distance);
+    System.out.println(MYNAME + ": Kp: " + P + 
+                                "  Ki: " + I + 
+                                "  Kd: " + D);
   
   }
 
@@ -96,13 +96,13 @@ public class EncoderBasedDrive extends Command implements PIDSource, PIDOutput {
     //Honor thy watchdog timer...
     double elapsedTime = watchDogTimer.get();
     if (elapsedTime > watchDogTime) {
-      System.out.println("EncoderBasedDrive:  watchdog timer popped: " + 
+      System.out.println(MYNAME + ": watchdog timer popped: " + 
                           distanceTraveled + "/" + distance);
       return true;
     }
 
     if (pidController.onTarget() || distanceTraveled > distance) {
-      System.out.println("EncoderBasedDrive: onTarget or traveled far enough: " +
+      System.out.println(MYNAME + ": onTarget or traveled far enough: " +
                          distanceTraveled + "/" + distance);
        return true;
     }

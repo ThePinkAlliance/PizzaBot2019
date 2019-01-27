@@ -8,6 +8,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.commands.DriveStraightByGyro;
 import frc.robot.commands.EncoderBasedDrive;
 
 /**
@@ -30,6 +31,17 @@ public class RobotDashboard {
     public static final String DT_ENC_Kp = "DT_ENC_Kp";
     public static final String DT_ENC_Ki = "DT_ENC_Ki";
     public static final String DT_ENC_Kd = "DT_ENC_Kd";
+
+    //Gyro Data
+    public static final String NAVX_LABEL_ANGLE = "NAVX Angle";
+    public static final String NAVX_LABEL_YAW   = "NAVX Yaw";
+
+    //PID for DriveStraightByGyro
+    public static final String DT_NAVX_PID_ANGLE        = "DT_NAVX_PID_ANGLE";
+    public static final String DT_NAVX_PID_MAX_OUTPUT   = "DT_NAVX_PID_OUTPUT";
+    public static final String DT_NAVX_Kp = "DT_NAVX_Kp";
+    public static final String DT_NAVX_Ki = "DT_NAVX_Ki";
+    public static final String DT_NAVX_Kd = "DT_NAVX_Kd";
 
     
     private boolean bDisplayContinuousData = true;
@@ -71,6 +83,16 @@ public class RobotDashboard {
     }
 
     /**
+     * Prints any gyro related values to the dashboard
+     */
+    public void displayGyroValues() {
+        if (Robot.m_driveTrain != null) {
+            SmartDashboard.putNumber(NAVX_LABEL_ANGLE, Robot.m_driveTrain.getGyroAngle());
+            SmartDashboard.putNumber(NAVX_LABEL_YAW, Robot.m_driveTrain.getGyroYaw());
+        }
+    }
+
+    /**
      * Display DriveTrain Encoder PID values
      */
     public void displayDriveTrainEncoderPIDValues() {
@@ -81,6 +103,20 @@ public class RobotDashboard {
             SmartDashboard.putNumber(DT_ENC_Kp, EncoderBasedDrive.CMD_Kp);
             SmartDashboard.putNumber(DT_ENC_Ki, EncoderBasedDrive.CMD_Ki);
             SmartDashboard.putNumber(DT_ENC_Kd, EncoderBasedDrive.CMD_Kd);
+        }
+    }
+
+    /**
+     * Display DriveTrain Navx PID values
+     */
+    public void displayDriveTrainNavxPIDValues() {
+        //DriveTrain subsystem
+        if (Robot.m_driveTrain != null) {
+            SmartDashboard.putNumber(DT_NAVX_PID_ANGLE, DriveStraightByGyro.CMD_DEFAULT_ANGLE);
+            SmartDashboard.putNumber(DT_NAVX_PID_MAX_OUTPUT, DriveStraightByGyro.CMD_MAX_OUTPUT);
+            SmartDashboard.putNumber(DT_NAVX_Kp, DriveStraightByGyro.CMD_Kp);
+            SmartDashboard.putNumber(DT_NAVX_Ki, DriveStraightByGyro.CMD_Ki);
+            SmartDashboard.putNumber(DT_NAVX_Kd, DriveStraightByGyro.CMD_Kd);
         }
     }
 
@@ -98,10 +134,24 @@ public class RobotDashboard {
     }
 
     /**
+     * Grab the DriveTrain Navx PID values from the Dashboard and set them 
+     * on the drive train
+     */
+    public void getDriveTrainNavxPIDValues() {
+        //DriveTrain subsystem
+        if (Robot.m_driveTrain != null) {
+            Robot.m_driveTrain.setNavxKp(SmartDashboard.getNumber(DT_NAVX_Kp, DriveStraightByGyro.CMD_Kp));
+            Robot.m_driveTrain.setNavxKi(SmartDashboard.getNumber(DT_NAVX_Ki, DriveStraightByGyro.CMD_Ki));
+            Robot.m_driveTrain.setNavxKd(SmartDashboard.getNumber(DT_NAVX_Kd, DriveStraightByGyro.CMD_Kd));
+        }
+    }
+
+    /**
      * Grabs values from the dashboard on a continuous basis (telelop / autonomous)
      */
     public void getContinuousData() {
         getDriveTrainEncoderPIDValues();
+        getDriveTrainNavxPIDValues();
     }
 
     /**
@@ -109,7 +159,9 @@ public class RobotDashboard {
      */
     public void displayInitialValues() {
         displayDriveTrainEncoderPIDValues();
+        displayDriveTrainNavxPIDValues();
         displayEncoderValues();
+        displayGyroValues();
     }
 
     /**
@@ -117,5 +169,6 @@ public class RobotDashboard {
      */
     public void displayContinuousData() {
         displayEncoderValues();
+        displayGyroValues();
     }
 }

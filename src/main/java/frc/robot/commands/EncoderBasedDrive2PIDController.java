@@ -19,7 +19,7 @@ import frc.robot.subsystems.utils.DriveTrainPIDSourceRight;
 
 public class EncoderBasedDrive2PIDController extends Command {
 
-  
+  public static final String MYNAME = "EncoderBasedDrive2PIDController";
   public static final double CMD_TOLERANCE        = 1.0;
   public static final double CMD_Kp               = 0.33;
   public static final double CMD_Ki               = 0.0;
@@ -100,10 +100,10 @@ public class EncoderBasedDrive2PIDController extends Command {
     pidControllerL.enable();
 
     //Let the console know...
-    System.out.println("EncoderBasedDrive:  enabled PIDController for distance of: " + distance);
-    System.out.println("EncoderBasedDrive:  Kp: " + P + 
-                                          " Ki: " + I + 
-                                          " Kd: " + D);
+    System.out.println(MYNAME + ":  enabled PIDController for distance of: " + distance);
+    System.out.println(MYNAME + ":  Kp: " + P + 
+                                  " Ki: " + I + 
+                                  " Kd: " + D);
   
   }
 
@@ -122,8 +122,8 @@ public class EncoderBasedDrive2PIDController extends Command {
     //Honor thy watchdog timer...
     double elapsedTime = watchDogTimer.get();
     if (elapsedTime > watchDogTime) {
-      System.out.println("EncoderBasedDrive:  watchdog timer popped: " + 
-                          distanceTraveledL + "/" + distanceTraveledR);
+      System.out.println(MYNAME + ": watchdog timer popped: " + 
+                                    distanceTraveledL + "/" + distanceTraveledR);
       return true;
     }
 
@@ -135,19 +135,19 @@ public class EncoderBasedDrive2PIDController extends Command {
     if (leftSideDone) {
       pidControllerL.disable();
       Robot.m_driveTrain.leftMotorStop();
-      System.out.println("LEFT: onTarget or traveled far enough: " +
+      System.out.println(MYNAME + ": LEFT: onTarget or traveled far enough: " +
                          distanceTraveledL);
     } 
 
     if (rightSideDone) {
       pidControllerR.disable();
       Robot.m_driveTrain.rightMotorStop();
-      System.out.println("RIGHT: onTarget or traveled far enough: " +
+      System.out.println(MYNAME + ": RIGHT: onTarget or traveled far enough: " +
                          distanceTraveledR);
     }
     
     if (leftSideDone && rightSideDone) {
-      System.out.println("DONE: onTarget or traveled far enough :" +
+      System.out.println(MYNAME + ": DONE: onTarget or traveled far enough :" +
                          distanceTraveledL + "/" + distanceTraveledR);
        return true;
     }
