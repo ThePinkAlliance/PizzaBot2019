@@ -136,7 +136,7 @@ public class DriveStraightByGyro extends Command implements PIDOutput {
     double left = maxSpeed;
     double right = maxSpeed;
 
-    if (output < 0.0)
+    if (output > 0.0)
     {
       right = right + output;
       left = left - output;
