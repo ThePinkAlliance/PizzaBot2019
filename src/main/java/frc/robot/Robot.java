@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.MotionProfileMotor;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -26,6 +27,7 @@ import frc.robot.subsystems.ExampleSubsystem;
 public class Robot extends TimedRobot {
   public static ExampleSubsystem m_subsystem = new ExampleSubsystem();
   public static DriveTrain m_driveTrain = new DriveTrain();
+  public static MotionProfileMotor m_motion = new MotionProfileMotor();
   public static OI m_oi;
   public static RobotDashboard m_rDashboard;
 
@@ -74,11 +76,13 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
+    m_motion.setupTalon();
   }
 
   @Override
   public void disabledPeriodic() {
     Scheduler.getInstance().run();
+    m_motion.stopMotionProfile();
   }
 
   /**

@@ -11,6 +11,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import frc.robot.commands.MotionProfileTest;
 
 
 /**
@@ -81,7 +82,7 @@ public class OI {
 
       //Setup your joystick
       base = new Joystick(baseJoystickPort);
-      testButton = new JoystickButton(base, aButtonNumber);
+      testButton = new JoystickButton(base, yButtonNumber);
 
       //Enable buttons / actions 
       setupBaseJoystick();
@@ -95,7 +96,7 @@ public class OI {
   
   public void setupBaseJoystick() {
     if (base != null) {
-       //testButton.whenPressed(new EncoderBasedDrive(30.0, 10.0, 0.6));
+       testButton.whenPressed(new MotionProfileTest());
     }
   }
 	

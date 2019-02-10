@@ -32,7 +32,7 @@ public class DriveTrain extends Subsystem {
   public static final int ESC_FRONT_RIGHT = 3;
   public static final int[] ENC_DIO_FRONT_RIGHT = {4,5};
 
-  public static final int ESC_FRONT_LEFT = 4;
+  public static final int ESC_FRONT_LEFT = 5; //4;  <<<<<< CHANGED to 5 while testing motion profiling
   public static final int[] ENC_DIO_FRONT_LEFT = {6,7};
 
   public static final int ESC_REAR_RIGHT = 2;

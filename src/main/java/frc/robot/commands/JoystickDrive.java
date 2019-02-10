@@ -87,19 +87,19 @@ public class JoystickDrive extends Command {
       }
 
       if (js.getRawButtonPressed(OI.aButtonNumber)) {
-        EncoderBasedDrive2PIDController testCmd = new EncoderBasedDrive2PIDController(
-          SmartDashboard.getNumber(RobotDashboard.DT_ENC_PID_DISTANCE, 30.0), 
-          10, 
-          SmartDashboard.getNumber(RobotDashboard.DT_ENC_PID_MAX_OUTPUT, 1.0));
-        testCmd.start();
+        //EncoderBasedDrive2PIDController testCmd = new EncoderBasedDrive2PIDController(
+        //  SmartDashboard.getNumber(RobotDashboard.DT_ENC_PID_DISTANCE, 30.0), 
+        //  10, 
+        //  SmartDashboard.getNumber(RobotDashboard.DT_ENC_PID_MAX_OUTPUT, 1.0));
+        //testCmd.start();
       }
 
       if (js.getRawButtonPressed(OI.yButtonNumber)) {
-        DriveStraightByGyro testCmd = new DriveStraightByGyro(
-          SmartDashboard.getNumber(RobotDashboard.DT_ENC_PID_DISTANCE, 30.0), 
-          10, 
-          SmartDashboard.getNumber(RobotDashboard.DT_ENC_PID_MAX_OUTPUT, 1.0));
-        testCmd.start();
+        //DriveStraightByGyro testCmd = new DriveStraightByGyro(
+         // SmartDashboard.getNumber(RobotDashboard.DT_ENC_PID_DISTANCE, 30.0), 
+         // 10, 
+         // SmartDashboard.getNumber(RobotDashboard.DT_ENC_PID_MAX_OUTPUT, 1.0));
+        //testCmd.start();
       }
     }
   }
