@@ -31,6 +31,6 @@ public class MotionProfileGroupTest extends CommandGroup {
     // a CommandGroup containing them would require both the chassis and the
     // arm.
     addParallel(new MotionProfileTest());
-    addParallel(new MotionProfileTest2());
+    //addParallel(new MotionProfileTest2());
   }
 }
