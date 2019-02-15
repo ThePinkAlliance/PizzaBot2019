@@ -29,7 +29,7 @@ public class DriveTrain extends Subsystem {
 
   public static final String MYNAME = "DriveTrain";
 
-  public static final int ESC_FRONT_RIGHT = 3;
+  public static final int ESC_FRONT_RIGHT = 3;//3; <<<<<< CHANGED to 1 while testing motion profiling
   public static final int[] ENC_DIO_FRONT_RIGHT = {4,5};
 
   public static final int ESC_FRONT_LEFT = 5; //4;  <<<<<< CHANGED to 5 while testing motion profiling
@@ -77,20 +77,20 @@ public class DriveTrain extends Subsystem {
   public DriveTrain() {
 
     //Motor setup
-    _rightFront = new WPI_TalonSRX(ESC_FRONT_RIGHT);
-    _rightRear = new WPI_TalonSRX(ESC_REAR_RIGHT);
-    _leftFront = new WPI_TalonSRX(ESC_FRONT_LEFT);
-    _leftRear = new WPI_TalonSRX(ESC_REAR_LEFT);
-    _rightFront.setInverted(false);
-    _leftFront.setInverted(true);
-    _rightRear.setInverted(false);
-    _leftRear.setInverted(true);
-    setNeutralMode(NeutralMode.Brake);
+    //_rightFront = new WPI_TalonSRX(ESC_FRONT_RIGHT);
+    //_rightRear = new WPI_TalonSRX(ESC_REAR_RIGHT);
+    //_leftFront = new WPI_TalonSRX(ESC_FRONT_LEFT);
+    //_leftRear = new WPI_TalonSRX(ESC_REAR_LEFT);
+    //_rightFront.setInverted(false);
+    //_leftFront.setInverted(true);
+    //_rightRear.setInverted(false);
+    //_leftRear.setInverted(true);
+    //setNeutralMode(NeutralMode.Brake);
     
     //_faults_L = new Faults();
     //_faults_R = new Faults();
-    _rightRear.set(ControlMode.Follower, ESC_FRONT_RIGHT);
-    _leftRear.set(ControlMode.Follower, ESC_FRONT_LEFT);
+    //_rightRear.set(ControlMode.Follower, ESC_FRONT_RIGHT);
+    //_leftRear.set(ControlMode.Follower, ESC_FRONT_LEFT);
 
    
     //Encoder setup
@@ -104,8 +104,9 @@ public class DriveTrain extends Subsystem {
     SetupEncoder(_enc_rightRear,  "RIGHTREAR", false);
 
 
-    _diffDrive = new DifferentialDrive(_leftFront, _rightFront);
-    _diffDrive.setRightSideInverted(false);
+    //_diffDrive = new DifferentialDrive(_leftFront, _rightFront);
+    //_diffDrive = new DifferentialDrive(_leftRear, _rightRear);
+    //_diffDrive.setRightSideInverted(false);
 
     try {
       /* Communicate w/navX-MXP via the MXP SPI Bus.                                     */
@@ -137,7 +138,7 @@ public class DriveTrain extends Subsystem {
   }
 
   public void stopDriveTrain() {
-    _diffDrive.tankDrive(0,0);
+    //_diffDrive.tankDrive(0,0);
   }
 
   public void resetEncoders() {
@@ -271,24 +272,28 @@ public class DriveTrain extends Subsystem {
   }
 
   public void rightMotor(double output) {
-    _rightFront.set(output);
+    if (_rightFront != null)
+       _rightFront.set(output);
   }
 
   public void leftMotor(double output) {
+    if (_leftFront != null)
     _leftFront.set(output);
   }
 
   public void rightMotorStop() {
+    if (_rightFront != null)
     _rightFront.set(0);
   }
 
   public void leftMotorStop() {
+    if (_leftFront != null)
     _leftFront.set(0);
   }
 
   public void tankDriveByEncoder(double left, double right) {
     
-		_diffDrive.tankDrive(left, right);
+		//_diffDrive.tankDrive(left, right);
   }
   
   public void tankDriveByJoystick(double left, double right) {
@@ -304,6 +309,6 @@ public class DriveTrain extends Subsystem {
     //if (Math.abs(left) > 0.1  || Math.abs(right) > 0.1)
     //   System.out.println("Left: " + left +  " ---    Right: " + right);
     
-		_diffDrive.tankDrive(left, right);
+		//_diffDrive.tankDrive(left, right);
 	}
 }

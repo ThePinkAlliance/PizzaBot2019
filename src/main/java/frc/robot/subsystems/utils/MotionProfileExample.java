@@ -25,6 +25,8 @@ package frc.robot.subsystems.utils;
 
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.*;
 
 import edu.wpi.first.wpilibj.Notifier;
@@ -48,6 +50,7 @@ public class MotionProfileExample {
 	 * motion profile.
 	 */
 	private TalonSRX _talon;
+	private TalonSRX _talonFollower;
 	/**
 	 * State machine to make sure we let enough of the motion profile stream to
 	 * talon before we fire it.
@@ -95,10 +98,14 @@ public class MotionProfileExample {
 	 * every 10ms.
 	 */
 	class PeriodicRunnable implements java.lang.Runnable {
-	    public void run() {  _talon.processMotionProfileBuffer();    }
+		public void run() {  
+						//System.out.println("Runnable: " + _setValue);
+						_talon.processMotionProfileBuffer();    
+					}
 	}
-	Notifier _notifer = new Notifier(new PeriodicRunnable());
 	
+	
+	Notifier _notifier = null;
 
 	/**
 	 * C'tor
@@ -106,14 +113,18 @@ public class MotionProfileExample {
 	 * @param talon
 	 *            reference to Talon object to fetch motion profile status from.
 	 */
-	public MotionProfileExample(TalonSRX talon) {
+	public MotionProfileExample(TalonSRX talon, TalonSRX follower) {
 		_talon = talon;
+		_talonFollower = follower;
 		/*
 		 * since our MP is 10ms per point, set the control frame rate and the
 		 * notifer to half that
 		 */
 		_talon.changeMotionControlFramePeriod(5);
-		_notifer.startPeriodic(0.005);
+		_talonFollower.changeMotionControlFramePeriod(5);
+		_notifier = new Notifier(new PeriodicRunnable());
+		_notifier.startPeriodic(0.005);
+		//_notifier.stop();
 	}
 
 	/**
@@ -228,18 +239,24 @@ public class MotionProfileExample {
 						_setValue = SetValueMotionProfile.Hold;
 						_state = 0;
 						_loopTimeout = -1;
+					} else {
+						//_talon.set(ControlMode.MotionProfile, _setValue.value);
+						_setValue = SetValueMotionProfile.Enable;
+						_talon.set(ControlMode.MotionProfile, _setValue.value);
+						//_talon.processMotionProfileBuffer();
 					}
 					break;
 			}
 
 			/* Get the motion profile status every loop */
 			_talon.getMotionProfileStatus(_status);
-			_heading = _talon.getActiveTrajectoryHeading();
+			//_heading = _talon.getActiveTrajectoryHeading();
 			_pos = _talon.getActiveTrajectoryPosition();
 			_vel = _talon.getActiveTrajectoryVelocity();
+			//_talon.processMotionProfileBuffer();
 
 			/* printfs and/or logging */
-			Instrumentation.process(_status, _pos, _vel, _heading);
+			//Instrumentation.process(_status, _pos, _vel, _heading);
 		}
 	}
 
@@ -312,4 +329,76 @@ public class MotionProfileExample {
 	public SetValueMotionProfile getSetValue() {
 		return _setValue;
 	}
+
+	public boolean isMotionProfileDone() {
+		if (_status.activePointValid &&  _status.isLast) {
+			System.out.println("Last point reached!");
+	        return true;
+		}
+		else
+		   return false;
+	}
+
+	public void setupTalon(boolean invert) {
+		/* Factory Default all hardware to prevent unexpected behaviour */
+		_talon.configFactoryDefault();
+		_talonFollower.configFactoryDefault();
+		_talonFollower.setInverted(invert);
+		_talonFollower.set(ControlMode.Follower, _talon.getDeviceID());
+		_talon.clearMotionProfileTrajectories(); //online
+
+		_talon.changeMotionControlFramePeriod(5);
+		_talonFollower.changeMotionControlFramePeriod(5);
+		_talon.setInverted(invert);
+
+	
+		/* Configure Selected Sensor for Motion Profile */
+	  
+			_talon.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder,
+												Constants.kPIDLoopIdx,
+												Constants.kTimeoutMs);
+			/* Keep sensor and motor in phase, postive sensor values when MC LEDs are green */
+		_talon.setSensorPhase(false);
+		//_talon.setSelectedSensorPosition(0);
+			
+			/**
+			 * Configure MotorController Neutral Deadband, disable Motor Controller when
+			 * requested Motor Output is too low to process
+			 */
+			_talon.configNeutralDeadband(Constants.kNeutralDeadband, Constants.kTimeoutMs);
+	
+			/* Configure PID Gains, to be used with Motion Profile */
+			_talon.config_kF(Constants.kPIDLoopIdx, Constants.kGains.kF, Constants.kTimeoutMs);
+			_talon.config_kP(Constants.kPIDLoopIdx, Constants.kGains.kP, Constants.kTimeoutMs);
+			_talon.config_kI(Constants.kPIDLoopIdx, Constants.kGains.kI, Constants.kTimeoutMs);
+			_talon.config_kD(Constants.kPIDLoopIdx, Constants.kGains.kD, Constants.kTimeoutMs);
+	
+			/* Our profile uses 10ms timing */
+			_talon.configMotionProfileTrajectoryPeriod(10, Constants.kTimeoutMs); 
+			
+			/* Status 10 provides the trajectory target for motion profile AND motion magic */
+			_talon.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, Constants.kTimeoutMs);
+	  
+		
+	  }
+
+	  public void stopMotionProfile() {
+		_talon.set(ControlMode.MotionProfile, SetValueMotionProfile.Hold.value);
+		_talon.clearMotionProfileTrajectories();
+		_talon.set(ControlMode.MotionProfile, SetValueMotionProfile.Disable.value);
+		_talon.set(ControlMode.PercentOutput, 0);
+		//reset();
+	  }
+	
+	  //public void resetMotionProfile() {
+		//reset();
+		
+	  //}
+	
+	  public void setMotionProfileMode() {
+		SetValueMotionProfile setOutput = getSetValue();
+		   _talon.set(ControlMode.MotionProfile, setOutput.value);
+	  }
+	
+	  
 }

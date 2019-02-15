@@ -79,6 +79,13 @@ public class RobotDashboard {
             SmartDashboard.putNumber(ENC_LABEL_RIGHT_FRONT, Robot.m_driveTrain.getFrontRightDistance());
             SmartDashboard.putNumber(ENC_LABEL_LEFT_FRONT, Robot.m_driveTrain.getFrontLeftDistance());
             SmartDashboard.putNumber(ENC_LABEL_FRONT, Robot.m_driveTrain.getFrontDistanceAverage());
+           
+        }
+        if (Robot.m_motion != null) {
+            SmartDashboard.putNumber("TALON 4 ENC ", Robot.m_motion.getEncPosition());
+        }
+        if (Robot.m_motionR != null) {
+            SmartDashboard.putNumber("TALON 3 ENC ", Robot.m_motionR.getEncPosition());
         }
     }
 

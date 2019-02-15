@@ -45,5 +45,5 @@ public class Constants {
     /* Gains used in Position Closed Loop, to be adjusted accordingly
      * Gains(kp, ki, kd, kf, izone, peak output);
      */
-    public static final Gains kGains = new Gains(0.1, 0.0, 0.0, 1023.0/7200.0, 0, 1.0);
+    public static final Gains kGains = new Gains(0.1, 0.0, 0.0, /*0.109728*/1023.0/7200.0, 0, 1.0);
 }

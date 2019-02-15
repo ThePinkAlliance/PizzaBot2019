@@ -11,6 +11,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import frc.robot.commands.MotionProfileGroupTest;
 import frc.robot.commands.MotionProfileTest;
 
 
@@ -96,7 +97,7 @@ public class OI {
   
   public void setupBaseJoystick() {
     if (base != null) {
-       testButton.whenPressed(new MotionProfileTest());
+       testButton.whenPressed(new MotionProfileGroupTest());
     }
   }
 	

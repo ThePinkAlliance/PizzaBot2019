@@ -14,16 +14,16 @@ import frc.robot.Robot;
 import frc.robot.subsystems.MotionProfileMotor;
 import frc.robot.subsystems.utils.MotionProfileExample;
 
-public class MotionProfileTest extends Command {
+public class MotionProfileTest2 extends Command {
 
   private Joystick js = null; 
   private MotionProfileExample mp = null;
   
 
-  public MotionProfileTest() {
+  public MotionProfileTest2() {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
-    requires(Robot.m_motion);
+    requires(Robot.m_motionR);
     
 
   }
@@ -31,17 +31,17 @@ public class MotionProfileTest extends Command {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    mp = Robot.m_motion.getMP();
-    if (Robot.m_motion.getLocation().equalsIgnoreCase(MotionProfileMotor.LOCATION_LEFT)) {
+    mp = Robot.m_motionR.getMP();
+    if (Robot.m_motionR.getLocation().equalsIgnoreCase(MotionProfileMotor.LOCATION_LEFT)) {
       mp.setupTalon(true);
     } else {
       mp.setupTalon(false);
     }
     mp.reset();
-    Robot.m_motion.resetEncoderPosition(0);
+    Robot.m_motionR.resetEncoderPosition(0);
     mp.setMotionProfileMode();
     mp.startMotionProfile();
-    System.out.println("MotionProfileTest(): initialized");
+    System.out.println("MotionProfileTest2(): initialized");
   }
 
   // Called repeatedly when this Command is scheduled to run
