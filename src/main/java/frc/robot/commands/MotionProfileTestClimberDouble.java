@@ -11,55 +11,67 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.OI;
 import frc.robot.Robot;
+import frc.robot.subsystems.MotionProfileClimber;
 import frc.robot.subsystems.MotionProfileMotor;
+import frc.robot.subsystems.utils.MotionProfileClimberDouble;
 import frc.robot.subsystems.utils.MotionProfileExample;
 
-public class MotionProfileTest2 extends Command {
+public class MotionProfileTestClimberDouble extends Command {
 
   private Joystick js = null; 
-  private MotionProfileExample mp = null;
+  private MotionProfileClimberDouble mp = null;
+  private String direction = MotionProfileClimber.DIRECTION_UP;
+  private boolean movingUp = false;
   
 
-  public MotionProfileTest2() {
+  public MotionProfileTestClimberDouble(String direction) {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
-    //requires(Robot.m_motionR);
-    
-
+    requires(Robot.m_climber);
+    this.direction = direction;
+    if (direction.equalsIgnoreCase(MotionProfileClimber.DIRECTION_UP)) {
+      movingUp = true;
+    } else {
+      movingUp = false;
+    }
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-   // mp = Robot.m_motionR.getMP();
-    //if (Robot.m_motionR.getLocation().equalsIgnoreCase(MotionProfileMotor.LOCATION_LEFT)) {
-    //  mp.setupTalon(true);
-    //} else {
-    //  mp.setupTalon(false);
-    //}
-    //mp.reset();
-    //Robot.m_motionR.resetEncoderPosition(0);
-    //mp.setMotionProfileMode();
-    //mp.startMotionProfile();
-    //System.out.println("MotionProfileTest2(): initialized");
+    mp = Robot.m_climber.getMP();
+    if (movingUp) {
+      mp.setupTalon(true);
+    } else {
+      mp.setupTalon(false);
+    }
+    mp.reset();
+    Robot.m_climber.resetEncoderPosition(0);
+    mp.setMotionProfileMode();
+    mp.startMotionProfile();
+    System.out.println("MotionProfileTest(): initialized");
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    mp.control();
+    mp.control(movingUp);
     mp.setMotionProfileMode();
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    boolean mpPressed = Robot.m_oi.getBaseJoystick().getRawButton(OI.aButtonNumber);
+    //boolean mpPressed = Robot.m_oi.getBaseJoystick().getRawButton(OI.aButtonNumber);
     //System.out.println("mpPressed: " + mpPressed);
 
     boolean bMPDone = mp.isMotionProfileDone();
+    boolean bTop = Robot.m_climber.limitTopF();
+    boolean bBottom = Robot.m_climber.limitBottomF();
+    boolean bWall = Robot.m_climber.limitWallF();
+    boolean bLimit = (movingUp ? bTop : bBottom);
 
-    return (mpPressed || bMPDone);
+    return (bMPDone || bLimit || bWall);
   }
 
   // Called once after isFinished returns true

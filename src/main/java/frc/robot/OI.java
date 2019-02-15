@@ -11,8 +11,9 @@ package frc.robot;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
-import frc.robot.commands.MotionProfileGroupTest;
-import frc.robot.commands.MotionProfileTest;
+import frc.robot.commands.MotionProfileGroupTest1;
+import frc.robot.commands.MotionProfileGroupTest2;
+
 
 
 /**
@@ -75,15 +76,16 @@ public class OI {
 
   //public Joystick base = new Joystick(baseJoystickPort);
   public Joystick base = null; 
-  public Button testButton = null; 
-	
+  public Button testButton1 = null; 
+  public Button testButton2 = null;
 	public OI() {
 
     try {
 
       //Setup your joystick
       base = new Joystick(baseJoystickPort);
-      testButton = new JoystickButton(base, yButtonNumber);
+      testButton1 = new JoystickButton(base, yButtonNumber);
+      testButton2 = new JoystickButton(base, xButtonNumber);
 
       //Enable buttons / actions 
       setupBaseJoystick();
@@ -97,7 +99,8 @@ public class OI {
   
   public void setupBaseJoystick() {
     if (base != null) {
-       testButton.whenPressed(new MotionProfileGroupTest());
+       testButton1.whenPressed(new MotionProfileGroupTest1());
+       testButton2.whenPressed(new MotionProfileGroupTest2());
     }
   }
 	

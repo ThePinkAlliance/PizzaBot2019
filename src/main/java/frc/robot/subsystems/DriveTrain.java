@@ -94,7 +94,7 @@ public class DriveTrain extends Subsystem {
 
    
     //Encoder setup
-    _enc_leftFront = new Encoder(ENC_DIO_FRONT_LEFT[0], ENC_DIO_FRONT_LEFT[1], ENC_INVERT_COUNT_FALSE, Encoder.EncodingType.k4X);
+    _enc_leftFront = null; //new Encoder(ENC_DIO_FRONT_LEFT[0], ENC_DIO_FRONT_LEFT[1], ENC_INVERT_COUNT_FALSE, Encoder.EncodingType.k4X);
     _enc_leftRear = new Encoder(ENC_DIO_REAR_LEFT[0], ENC_DIO_REAR_LEFT[1], ENC_INVERT_COUNT_FALSE, Encoder.EncodingType.k4X);
     _enc_rightFront = new Encoder(ENC_DIO_FRONT_RIGHT[0], ENC_DIO_FRONT_RIGHT[1], ENC_INVERT_COUNT_FALSE, Encoder.EncodingType.k4X);
     _enc_rightRear = new Encoder(ENC_DIO_REAR_RIGHT[0], ENC_DIO_REAR_RIGHT[1], ENC_INVERT_COUNT_FALSE, Encoder.EncodingType.k4X);
@@ -153,6 +153,9 @@ public class DriveTrain extends Subsystem {
   }
 
   private void SetupEncoder(Encoder enc, String name, boolean reverseDirection) {
+    
+    if (enc == null)
+       return;
     enc.setName(name);
     System.out.println(MYNAME + ": Encoder: " + enc.getName());
     enc.setMaxPeriod(.1);

@@ -8,12 +8,13 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
+import frc.robot.subsystems.MotionProfileClimber;
 
-public class MotionProfileGroupTest extends CommandGroup {
+public class MotionProfileGroupTest2 extends CommandGroup {
   /**
    * Add your docs here.
    */
-  public MotionProfileGroupTest() {
+  public MotionProfileGroupTest2() {
     // Add Commands here:
     // e.g. addSequential(new Command1());
     // addSequential(new Command2());
@@ -30,7 +31,8 @@ public class MotionProfileGroupTest extends CommandGroup {
     // e.g. if Command1 requires chassis, and Command2 requires arm,
     // a CommandGroup containing them would require both the chassis and the
     // arm.
-    addParallel(new MotionProfileTest());
+    //addParallel(new MotionProfileTest());
     //addParallel(new MotionProfileTest2());
+    addSequential(new MotionProfileTestClimberDouble(MotionProfileClimber.DIRECTION_DOWN));
   }
 }

@@ -84,8 +84,16 @@ public class RobotDashboard {
         if (Robot.m_motion != null) {
             SmartDashboard.putNumber("TALON 4 ENC ", Robot.m_motion.getEncPosition());
         }
-        if (Robot.m_motionR != null) {
-            SmartDashboard.putNumber("TALON 3 ENC ", Robot.m_motionR.getEncPosition());
+        if (Robot.m_climber != null) {
+            SmartDashboard.putNumber("TALON 3 ENC ", Robot.m_climber.getEncPosition());
+        }
+    }
+
+    public void displaySwitchValues() {
+        if (Robot.m_climber != null) {
+            SmartDashboard.putBoolean("CLIMBER_TOP_FRONT", Robot.m_climber.limitTopF());
+            SmartDashboard.putBoolean("CLIMBER_BOTTOMN_FRONT", Robot.m_climber.limitBottomF());
+            SmartDashboard.putBoolean("CLIMBER_WALL_FRONT", Robot.m_climber.limitWallF());
         }
     }
 
@@ -177,5 +185,6 @@ public class RobotDashboard {
     public void displayContinuousData() {
         displayEncoderValues();
         displayGyroValues();
+        displaySwitchValues();
     }
 }
