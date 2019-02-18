@@ -16,11 +16,13 @@ import frc.robot.subsystems.MotionProfileClimber;
 public class ClimberDefault extends Command {
 
   private Joystick js = null; 
+  private MotionProfileClimber climberPod = null;
 
-  public ClimberDefault() {
+  public ClimberDefault(MotionProfileClimber theClimberPod) {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
-    requires(Robot.m_climber);
+    requires(theClimberPod);
+    this.climberPod = theClimberPod;
     js = Robot.m_oi.getBaseJoystick();
   }
 
@@ -35,23 +37,19 @@ public class ClimberDefault extends Command {
     if (js != null) {
 
       if (js.getRawButtonPressed(OI.aButtonNumber)) {
-        Robot.m_climber.resetEncoderPosition(0);
+        climberPod.resetEncoderPosition(0);
       }
 
-        //double left = js.getRawAxis(OI.leftStick);//js.getY(Hand.kLeft);
-      double right =  js.getRawAxis(OI.rightStick);//js.getY(Hand.kRight);
-      //if (left > 0.3 || right > 0.3)
-      //   System.out.println("LEFT: " + left + " RIGHT: " + right);
-      //System.out.println(right * 0.25 + " value from joystick");
-      if (right > 0.0) {
-        if (Robot.m_climber.limitBottomF() == MotionProfileClimber.SWITCH_CLOSED)
-           right = 0;
+      double value =  js.getRawAxis(OI.rightStick);
+      if (value > 0.0) {
+        if (climberPod.limitBottom() == MotionProfileClimber.SWITCH_CLOSED)
+           value = 0;
       } else {
-        if (Robot.m_climber.limitTopF() == MotionProfileClimber.SWITCH_CLOSED)
-           right = 0;
+        if (climberPod.limitTop() == MotionProfileClimber.SWITCH_CLOSED)
+           value = 0;
       }
-      //System.out.println(right * 1.0 + " value from joystick");
-      Robot.m_climber.set(right * 1.0);
+      //System.out.println(value + " value from joystick");
+      climberPod.set(value);
 
     }
   }

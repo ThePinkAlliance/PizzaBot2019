@@ -8,6 +8,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
+import frc.robot.Robot;
 import frc.robot.subsystems.MotionProfileClimber;
 
 public class MotionProfileGroupTest1 extends CommandGroup {
@@ -33,6 +34,7 @@ public class MotionProfileGroupTest1 extends CommandGroup {
     // arm.
     //addParallel(new MotionProfileTest());
     //addParallel(new MotionProfileTest2());
-    addSequential(new MotionProfileTestClimberDouble(MotionProfileClimber.DIRECTION_UP));
+    addParallel(new MotionProfileTestClimberDouble(Robot.m_climber, MotionProfileClimber.DIRECTION_UP, 4));
+    addParallel(new MotionProfileTestClimberDouble(Robot.m_climber2, MotionProfileClimber.DIRECTION_UP, 4));
   }
 }

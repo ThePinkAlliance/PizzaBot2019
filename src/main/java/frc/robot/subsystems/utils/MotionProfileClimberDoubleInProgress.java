@@ -25,15 +25,16 @@ package frc.robot.subsystems.utils;
 
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.*;
 
 import edu.wpi.first.wpilibj.Notifier;
 import frc.robot.subsystems.MotionProfileClimber;
 
-import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motion.*;
 
-public class MotionProfileClimberDouble {
+public class MotionProfileClimberDoubleInProgress {
 
 	/**
 	 * The status of the motion profile executer and buffer inside the Talon.
@@ -50,8 +51,8 @@ public class MotionProfileClimberDouble {
 	 * or call set(), just get motion profile status and make decisions based on
 	 * motion profile.
 	 */
-	private TalonSRX _talon;
-	private TalonSRX _talonFollower;
+	private TalonSRX _talon1;
+	private TalonSRX _talon2;
 	/**
 	 * State machine to make sure we let enough of the motion profile stream to
 	 * talon before we fire it.
@@ -93,21 +94,27 @@ public class MotionProfileClimberDouble {
 	 * Lets create a periodic task to funnel our trajectory points into our talon.
 	 * It doesn't need to be very accurate, just needs to keep pace with the motion
 	 * profiler executer.  Now if you're trajectory points are slow, there is no need
-	 * to do this, just call _talon.processMotionProfileBuffer() in your teleop loop.
+	 * to do this, just call _talon1.processMotionProfileBuffer() in your teleop loop.
 	 * Generally speaking you want to call it at least twice as fast as the duration
 	 * of your trajectory points.  So if they are firing every 20ms, you should call 
 	 * every 10ms.
 	 */
-	class PeriodicRunnable implements java.lang.Runnable {
+	class PeriodicRunnable1 implements java.lang.Runnable {
 		public void run() {  
 						//System.out.println("Runnable: " + _setValue);
-						_talon.processMotionProfileBuffer();    
+						_talon1.processMotionProfileBuffer();    
+					}
+	}
+	class PeriodicRunnable2 implements java.lang.Runnable {
+		public void run() {  
+						//System.out.println("Runnable: " + _setValue);
+						_talon2.processMotionProfileBuffer();    
 					}
 	}
 	
 	
-	Notifier _notifier = null;
-    Thread workerThread = null;
+	Notifier _notifier1 = null;
+	Notifier _notifier2 = null;
 
     private String _direction = MotionProfileClimber.DIRECTION_UP; 
 
@@ -117,20 +124,21 @@ public class MotionProfileClimberDouble {
 	 * @param talon
 	 *            reference to Talon object to fetch motion profile status from.
 	 */
-	public MotionProfileClimberDouble(TalonSRX talon, TalonSRX follower) {
-		_talon = talon;
-		_talonFollower = follower;
+	public MotionProfileClimberDoubleInProgress(TalonSRX talon1, TalonSRX talon2) {
+		_talon1 = talon1;
+		_talon2 = talon2;
 		
 
 		/*
 		 * since our MP is 10ms per point, set the control frame rate and the
 		 * notifer to half that
 		 */
-		_talon.changeMotionControlFramePeriod(5);
-		if (_talonFollower != null)
-		   _talonFollower.changeMotionControlFramePeriod(5);
-		_notifier = new Notifier(new PeriodicRunnable());
-		_notifier.startPeriodic(0.005);
+		_talon1.changeMotionControlFramePeriod(5);
+		_talon2.changeMotionControlFramePeriod(5);
+		_notifier1 = new Notifier(new PeriodicRunnable1());
+		_notifier1.startPeriodic(0.005);
+		_notifier2 = new Notifier(new PeriodicRunnable2());
+		_notifier2.startPeriodic(0.005);
 		//_notifier.stop();
 	}
 
@@ -144,7 +152,8 @@ public class MotionProfileClimberDouble {
 		 * middle of an MP, and now we have the second half of a profile just
 		 * sitting in memory.
 		 */
-		_talon.clearMotionProfileTrajectories();
+		_talon1.clearMotionProfileTrajectories();
+		_talon2.clearMotionProfileTrajectories();
 		/* When we do re-enter motionProfile control mode, stay disabled. */
 		_setValue = SetValueMotionProfile.Disable;
 		/* When we do start running our state machine start at the beginning. */
@@ -157,37 +166,12 @@ public class MotionProfileClimberDouble {
 		_bStart = false;
 	}
 
-	/* *
-	 * alternative way to execute MP outside of robot loop
-	 * start the thread in cmd's initialize().  stop it in end() && interrupted()
-	 * Make sure to comment out the execute() calls if you are going to do it this way.
-	public void startWorking(boolean movingUp) {
-		workerThread = new Thread(() -> {
-			while (!Thread.interrupted()) {
-					control(movingUp);
-                    setMotionProfileMode();
-			}
-			System.out.println("Exited motion profile thread");
-		});
-		workerThread.start();
-	}
-
-	public void stopWorking() {
-		if (workerThread != null) {
-			workerThread.interrupt();
-			System.out.println("Sent interrupt signal");
-		} else {
-            System.out.println("worker thread null");
-		}
-	}
-	*/
-
 	/**
 	 * Called every loop.
 	 */
 	public void control(boolean movingUp) {
 		/* Get the motion profile status every loop */
-		_talon.getMotionProfileStatus(_status);
+		_talon1.getMotionProfileStatus(_status);
 
 		/*
 		 * track time, this is rudimentary but that's okay, we just want to make
@@ -209,7 +193,7 @@ public class MotionProfileClimberDouble {
 		}
 
 		/* first check if we are in MP mode */
-		if (_talon.getControlMode() != ControlMode.MotionProfile) {
+		if (_talon1.getControlMode() != ControlMode.MotionProfile) {
 			/*
 			 * we are not in MP mode. We are probably driving the robot around
 			 * using gamepads or some other mode.
@@ -272,20 +256,20 @@ public class MotionProfileClimberDouble {
 						_state = 0;
 						_loopTimeout = -1;
 					} else {
-						//_talon.set(ControlMode.MotionProfile, _setValue.value);
+						//_talon1.set(ControlMode.MotionProfile, _setValue.value);
 						_setValue = SetValueMotionProfile.Enable;
-						_talon.set(ControlMode.MotionProfile, _setValue.value);
-						_talon.processMotionProfileBuffer();
+						_talon1.set(ControlMode.MotionProfile, _setValue.value);
+						//_talon1.processMotionProfileBuffer();
 					}
 					break;
 			}
 
 			/* Get the motion profile status every loop */
-			_talon.getMotionProfileStatus(_status);
-			//_heading = _talon.getActiveTrajectoryHeading();
-			_pos = _talon.getActiveTrajectoryPosition();
-			_vel = _talon.getActiveTrajectoryVelocity();
-			//_talon.processMotionProfileBuffer();
+			_talon1.getMotionProfileStatus(_status);
+			//_heading = _talon1.getActiveTrajectoryHeading();
+			_pos = _talon1.getActiveTrajectoryPosition();
+			_vel = _talon1.getActiveTrajectoryVelocity();
+			//_talon1.processMotionProfileBuffer();
 
 			/* printfs and/or logging */
 			//Instrumentation.process(_status, _pos, _vel, _heading);
@@ -314,16 +298,16 @@ public class MotionProfileClimberDouble {
 			 * clear the error. This flag does not auto clear, this way 
 			 * we never miss logging it.
 			 */
-			_talon.clearMotionProfileHasUnderrun(0);
+			_talon1.clearMotionProfileHasUnderrun(0);
 		}
 		/*
 		 * just in case we are interrupting another MP and there is still buffer
 		 * points in memory, clear it.
 		 */
-		_talon.clearMotionProfileTrajectories();
+		_talon1.clearMotionProfileTrajectories();
 
 		/* set the base trajectory period to zero, use the individual trajectory period below */
-		_talon.configMotionProfileTrajectoryPeriod(Constants.kBaseTrajPeriodMs, Constants.kTimeoutMs);
+		_talon1.configMotionProfileTrajectoryPeriod(Constants.kBaseTrajPeriodMs, Constants.kTimeoutMs);
 		
 		/* This is fast since it's just into our TOP buffer */
 		for (int i = 0; i < totalCnt; ++i) {
@@ -344,7 +328,7 @@ public class MotionProfileClimberDouble {
 			if ((i + 1) == totalCnt)
 				point.isLastPoint = true; /* set this to true on the last point  */
 
-			_talon.pushMotionProfileTrajectory(point);
+			_talon1.pushMotionProfileTrajectory(point);
 		}
 	}
 	/**
@@ -374,15 +358,59 @@ public class MotionProfileClimberDouble {
 		   return false;
 	}
 
+	public void setupTalon(boolean invert) {
+		/* Factory Default all hardware to prevent unexpected behaviour */
+		_talon2.configFactoryDefault();
+		if (_talon2 != null) {
+		_talon2.configFactoryDefault();
+		_talon2.setInverted(invert);
+		_talon2.set(ControlMode.Follower, _talon1.getDeviceID());
+		}
+		_talon1.clearMotionProfileTrajectories(); //online
+
+		_talon1.changeMotionControlFramePeriod(5);
+		if (_talon2 != null) {
+		_talon2.changeMotionControlFramePeriod(5);
+		}
+		_talon1.setInverted(invert);
+
 	
+		/* Configure Selected Sensor for Motion Profile */
+	  
+			_talon1.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder,
+												Constants.kPIDLoopIdx,
+												Constants.kTimeoutMs);
+			/* Keep sensor and motor in phase, postive sensor values when MC LEDs are green */
+		_talon1.setSensorPhase(true);
+		//_talon1.setSelectedSensorPosition(0);
+			
+			/**
+			 * Configure MotorController Neutral Deadband, disable Motor Controller when
+			 * requested Motor Output is too low to process
+			 */
+			_talon1.configNeutralDeadband(Constants.kNeutralDeadband, Constants.kTimeoutMs);
+	
+			/* Configure PID Gains, to be used with Motion Profile */
+			_talon1.config_kF(Constants.kPIDLoopIdx, Constants.kGains.kF, Constants.kTimeoutMs);
+			_talon1.config_kP(Constants.kPIDLoopIdx, Constants.kGains.kP, Constants.kTimeoutMs);
+			_talon1.config_kI(Constants.kPIDLoopIdx, Constants.kGains.kI, Constants.kTimeoutMs);
+			_talon1.config_kD(Constants.kPIDLoopIdx, Constants.kGains.kD, Constants.kTimeoutMs);
+	
+			/* Our profile uses 10ms timing */
+			_talon1.configMotionProfileTrajectoryPeriod(10, Constants.kTimeoutMs); 
+			
+			/* Status 10 provides the trajectory target for motion profile AND motion magic */
+			_talon1.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, Constants.kTimeoutMs);
+	  
+		
+	  }
 
 	  public void stopMotionProfile() {
-		_talon.set(ControlMode.MotionProfile, SetValueMotionProfile.Hold.value);
-		ErrorCode ec = _talon.clearMotionProfileTrajectories();
-		_talon.set(ControlMode.MotionProfile, SetValueMotionProfile.Disable.value);
-		_talon.set(ControlMode.PercentOutput, 0);
-		System.out.println("Stopped motion profile: " + _setValue + ": " + ec);
-		//_setValue = SetValueMotionProfile.Disable;
+		_talon1.set(ControlMode.MotionProfile, SetValueMotionProfile.Hold.value);
+		_talon1.clearMotionProfileTrajectories();
+		_talon1.set(ControlMode.MotionProfile, SetValueMotionProfile.Disable.value);
+		_talon1.set(ControlMode.PercentOutput, 0);
+		_setValue = SetValueMotionProfile.Disable;
 		//reset();
 	  }
 	
@@ -390,10 +418,10 @@ public class MotionProfileClimberDouble {
 		//reset();
 		
 	  //}
-	  
+	
 	  public void setMotionProfileMode() {
 		SetValueMotionProfile setOutput = getSetValue();
-		   _talon.set(ControlMode.MotionProfile, setOutput.value);
+		   _talon1.set(ControlMode.MotionProfile, setOutput.value);
 	  }
 	
 	  

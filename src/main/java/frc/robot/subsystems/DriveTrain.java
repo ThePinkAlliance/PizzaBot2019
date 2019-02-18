@@ -95,9 +95,10 @@ public class DriveTrain extends Subsystem {
    
     //Encoder setup
     _enc_leftFront = null; //new Encoder(ENC_DIO_FRONT_LEFT[0], ENC_DIO_FRONT_LEFT[1], ENC_INVERT_COUNT_FALSE, Encoder.EncodingType.k4X);
-    _enc_leftRear = new Encoder(ENC_DIO_REAR_LEFT[0], ENC_DIO_REAR_LEFT[1], ENC_INVERT_COUNT_FALSE, Encoder.EncodingType.k4X);
-    _enc_rightFront = new Encoder(ENC_DIO_FRONT_RIGHT[0], ENC_DIO_FRONT_RIGHT[1], ENC_INVERT_COUNT_FALSE, Encoder.EncodingType.k4X);
-    _enc_rightRear = new Encoder(ENC_DIO_REAR_RIGHT[0], ENC_DIO_REAR_RIGHT[1], ENC_INVERT_COUNT_FALSE, Encoder.EncodingType.k4X);
+    _enc_leftRear = null; //new Encoder(ENC_DIO_REAR_LEFT[0], ENC_DIO_REAR_LEFT[1], ENC_INVERT_COUNT_FALSE, Encoder.EncodingType.k4X);
+    _enc_rightFront = null; //new Encoder(ENC_DIO_FRONT_RIGHT[0], ENC_DIO_FRONT_RIGHT[1], ENC_INVERT_COUNT_FALSE, Encoder.EncodingType.k4X);
+    _enc_rightRear = null; //new Encoder(ENC_DIO_REAR_RIGHT[0], ENC_DIO_REAR_RIGHT[1], ENC_INVERT_COUNT_FALSE, Encoder.EncodingType.k4X);
+    
     SetupEncoder(_enc_leftFront, "LEFTFRONT", true);
     SetupEncoder(_enc_leftRear, "LEFTREAR" , true);
     SetupEncoder(_enc_rightFront, "RIGHTFRONT", false);
@@ -126,7 +127,7 @@ public class DriveTrain extends Subsystem {
   @Override
   public void initDefaultCommand() {
     // Set the default command for a subsystem here.
-    setDefaultCommand(new JoystickDrive());
+    //setDefaultCommand(new JoystickDrive());
   }
 
   public void setGovernor(double percent) {

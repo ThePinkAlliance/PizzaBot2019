@@ -17,6 +17,7 @@ import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.MotionProfileClimber;
 import frc.robot.subsystems.MotionProfileMotor;
+import frc.robot.subsystems.SparkMaxMotor;
 import frc.robot.subsystems.utils.MotionProfileExample;
 
 /**
@@ -29,11 +30,11 @@ import frc.robot.subsystems.utils.MotionProfileExample;
 public class Robot extends TimedRobot {
   public static ExampleSubsystem m_subsystem = new ExampleSubsystem();
   public static DriveTrain m_driveTrain = new DriveTrain();
-  public static MotionProfileMotor m_motion = new MotionProfileMotor(4, 1, MotionProfileMotor.LOCATION_LEFT);
- // public static MotionProfileMotor m_motionR = new MotionProfileMotor(3, 2, MotionProfileMotor.LOCATION_RIGHT);
-  public static MotionProfileClimber m_climber = new MotionProfileClimber(3, 2, 4, 1, MotionProfileClimber.LOCATION_FRONT);
- public static OI m_oi;
+  public static MotionProfileClimber m_climber = new MotionProfileClimber(3, 2, 9, 8, 7, MotionProfileClimber.LOCATION_FRONT);
+  public static MotionProfileClimber m_climber2 = new MotionProfileClimber(4, 1, 6, 5, 4, MotionProfileClimber.LOCATION_BACK);
+  public static OI m_oi = null;
   public static RobotDashboard m_rDashboard;
+  public static SparkMaxMotor m_spark = new SparkMaxMotor();
 
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -52,7 +53,6 @@ public class Robot extends TimedRobot {
     m_rDashboard = new RobotDashboard();
     m_rDashboard.displayEncoderValues();
     m_chooser.setDefaultOption("Default Auto", new ExampleCommand());
-    // chooser.addOption("My Auto", new MyAutoCommand());
     SmartDashboard.putData("Auto mode", m_chooser);
 
     //DriveTrain
@@ -80,13 +80,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
-    //m_motion.setupTalon();
-    if (m_motion != null) {
-       MotionProfileExample mp = m_motion.getMP();
-       if (mp != null) {
-         mp.stopMotionProfile();
-       }
-    }
+    
   }
 
   @Override
