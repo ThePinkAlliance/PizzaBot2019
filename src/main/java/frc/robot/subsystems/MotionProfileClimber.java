@@ -41,46 +41,61 @@ public class MotionProfileClimber extends Subsystem {
   public final static boolean SWITCH_CLOSED = true;
   public final static boolean SWITCH_OPEN = false;
 
-  private String location = "";
-
-
   /** some example logic on how one can manage an MP */
-  MotionProfileClimberDouble _example = null;//new MotionProfileExample(_talonM, null);
+  MotionProfileClimberDouble _example = null;
+
+  private PodPosition face = PodPosition.FRONT;
+  private PodPosition side = PodPosition.LEFT;
+
+  //point of view of the face that we climb with
+  public static enum PodPosition {
+    FRONT, //collector side
+    BACK,  //beak side
+    LEFT,  //where front is the collector
+    RIGHT  //where front is the collector
+  }
+
+  //point of view of the robot, not the pod mechanisms
+  //e.g.:  when the robot belly pan rises, thats up
+  public static enum ClimberDirection {
+    UP,
+    DOWN
+  }
   
   public MotionProfileClimber(int left, 
                               int right, 
                               int dioIdTop,
                               int dioIdBottom,
                               int dioIdWall, 
-                              String location) {
-    this.location = location;
-
+                              PodPosition face,
+                              PodPosition side) {
+    this.face = face;
+    this.side = side;
     _talon1 = new TalonSRX(left);
     _example = new MotionProfileClimberDouble(_talon1, null);
     switchTopF = new DigitalInput(dioIdTop);
     switchBottomF = new DigitalInput(dioIdBottom);
     switchWallF = new DigitalInput(dioIdWall);
 
-    setupTalonLeft();
+    setupTalon();
 
 
 
   }
 
-  public void invertTalonFL(boolean invert) {
+  public void invertTalon1(boolean invert) {
     _talon1.setInverted(invert);
   }
 
-  public void invertTalonRL(boolean invert) {
+  public void invertTalon2(boolean invert) {
     _talon2.setInverted(invert);
   }
 
-  public void setupTalonLeft() {
+  public void setupTalon() {
 		/* Factory Default all hardware to prevent unexpected behaviour */
 		_talon1.configFactoryDefault();
 		if (_talon2 != null) {
-		_talon2.configFactoryDefault();
-		//_talon2.setInverted(invert);
+		  _talon2.configFactoryDefault();
 		_talon2.set(ControlMode.Follower, _talon1.getDeviceID());
 		}
 		_talon1.clearMotionProfileTrajectories(); //online
@@ -88,8 +103,27 @@ public class MotionProfileClimber extends Subsystem {
 		_talon1.changeMotionControlFramePeriod(5);
 		if (_talon2 != null) {
 		_talon2.changeMotionControlFramePeriod(5);
-		}
-		//_talon1.setInverted(invert);
+    }
+    
+    /**
+     * the commands will call set inverted based on direction
+     *
+    if(side == PodPosition.RIGHT) {
+      _talon1.setInverted(false);
+      if (_talon2 != null) {
+        _talon2.setInverted(true);
+      }
+    } else {
+      _talon1.setInverted(true);
+      if (_talon2 != null) {
+        _talon2.setInverted(false);
+      }
+
+    }
+    */
+
+       
+      
 
 	
 		/* Configure Selected Sensor for Motion Profile */
@@ -173,7 +207,27 @@ public class MotionProfileClimber extends Subsystem {
     return _example;
   }
 
-  public String getLocation() {
-    return location;
+  public PodPosition getFace() {
+    return face;
+  }
+
+  public PodPosition getSide() {
+    return side;
+  }
+
+  public void setDirection(ClimberDirection direction) {
+    if (side == PodPosition.LEFT) {
+      if (direction == ClimberDirection.UP) {
+        _talon1.setInverted(true);
+      } else {
+        _talon1.setInverted(false);
+      }
+    } else {
+      if (direction == ClimberDirection.UP) {
+        _talon1.setInverted(false);
+      } else {
+        _talon1.setInverted(true);
+      }
+    }
   }
 }

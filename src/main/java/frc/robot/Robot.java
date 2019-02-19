@@ -30,8 +30,8 @@ import frc.robot.subsystems.utils.MotionProfileExample;
 public class Robot extends TimedRobot {
   public static ExampleSubsystem m_subsystem = new ExampleSubsystem();
   public static DriveTrain m_driveTrain = new DriveTrain();
-  public static MotionProfileClimber m_climber = new MotionProfileClimber(3, 2, 9, 8, 7, MotionProfileClimber.LOCATION_FRONT);
-  public static MotionProfileClimber m_climber2 = new MotionProfileClimber(4, 1, 6, 5, 4, MotionProfileClimber.LOCATION_BACK);
+  public static MotionProfileClimber m_climber = new MotionProfileClimber(3, 2, 9, 8, 7, MotionProfileClimber.PodPosition.FRONT, MotionProfileClimber.PodPosition.RIGHT);
+  public static MotionProfileClimber m_climber2 = new MotionProfileClimber(4, 1, 6, 5, 4, MotionProfileClimber.PodPosition.BACK, MotionProfileClimber.PodPosition.LEFT);
   public static OI m_oi = null;
   public static RobotDashboard m_rDashboard;
   public static SparkMaxMotor m_spark = new SparkMaxMotor();

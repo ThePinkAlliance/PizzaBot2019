@@ -41,6 +41,9 @@ public class ClimberDefault extends Command {
       }
 
       double value =  js.getRawAxis(OI.rightStick);
+      /**
+       * YOU MUST CHECK JS VALUE and verify whether positive is down / negative is up
+       */
       if (value > 0.0) {
         if (climberPod.limitBottom() == MotionProfileClimber.SWITCH_CLOSED)
            value = 0;

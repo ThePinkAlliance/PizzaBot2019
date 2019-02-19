@@ -29,6 +29,7 @@ import com.ctre.phoenix.motorcontrol.can.*;
 
 import edu.wpi.first.wpilibj.Notifier;
 import frc.robot.subsystems.MotionProfileClimber;
+import frc.robot.subsystems.MotionProfileClimber.ClimberDirection;
 
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motion.*;
@@ -144,6 +145,8 @@ public class MotionProfileClimberDouble {
 		 * middle of an MP, and now we have the second half of a profile just
 		 * sitting in memory.
 		 */
+		_status = new MotionProfileStatus();
+		
 		_talon.clearMotionProfileTrajectories();
 		/* When we do re-enter motionProfile control mode, stay disabled. */
 		_setValue = SetValueMotionProfile.Disable;
@@ -185,9 +188,10 @@ public class MotionProfileClimberDouble {
 	/**
 	 * Called every loop.
 	 */
-	public void control(boolean movingUp) {
+	public void control(ClimberDirection direction) {
 		/* Get the motion profile status every loop */
 		_talon.getMotionProfileStatus(_status);
+
 
 		/*
 		 * track time, this is rudimentary but that's okay, we just want to make
@@ -228,7 +232,7 @@ public class MotionProfileClimberDouble {
 						_bStart = false;
 	
 						_setValue = SetValueMotionProfile.Disable;
-						startFilling(movingUp);
+						startFilling(direction);
 						/*
 						 * MP is being sent to CAN bus, wait a small amount of time
 						 */
@@ -247,6 +251,8 @@ public class MotionProfileClimberDouble {
 						/* MP will start once the control frame gets scheduled */
 						_state = 2;
 						_loopTimeout = kNumLoopsTimeout;
+					} else {
+						//System.out.println("Not enough points");
 					}
 					break;
 				case 2: /* check the status of the MP */
@@ -293,9 +299,9 @@ public class MotionProfileClimberDouble {
 	}
 
 	/** Start filling the MPs to all of the involved Talons. */
-	private void startFilling(boolean movingUp) {
+	private void startFilling(ClimberDirection direction) {
 		/* since this example only has one talon, just update that one */
-		if (movingUp == true)
+		if (direction == ClimberDirection.UP)
 		  startFilling(GeneratedClimberUp.Points, GeneratedClimberUp.kNumPoints);
 		else
 		  startFilling(GeneratedClimberDown.Points, GeneratedClimberDown.kNumPoints);
@@ -344,7 +350,8 @@ public class MotionProfileClimberDouble {
 			if ((i + 1) == totalCnt)
 				point.isLastPoint = true; /* set this to true on the last point  */
 
-			_talon.pushMotionProfileTrajectory(point);
+			ErrorCode ec = _talon.pushMotionProfileTrajectory(point);
+			//System.out.println(ec);
 		}
 	}
 	/**
@@ -381,9 +388,14 @@ public class MotionProfileClimberDouble {
 		ErrorCode ec = _talon.clearMotionProfileTrajectories();
 		_talon.set(ControlMode.MotionProfile, SetValueMotionProfile.Disable.value);
 		_talon.set(ControlMode.PercentOutput, 0);
-		System.out.println("Stopped motion profile: " + _setValue + ": " + ec);
+		System.out.println("Stopped motion profile: " + _setValue + ": " + ec + ": " + _talon.getSelectedSensorPosition());
 		//_setValue = SetValueMotionProfile.Disable;
 		//reset();
+	  }
+
+	  public void clearTrajectoryPoints() {
+		  _talon.clearMotionProfileTrajectories();
+		  _talon.clearMotionProfileHasUnderrun();
 	  }
 	
 	  //public void resetMotionProfile() {
@@ -394,6 +406,10 @@ public class MotionProfileClimberDouble {
 	  public void setMotionProfileMode() {
 		SetValueMotionProfile setOutput = getSetValue();
 		   _talon.set(ControlMode.MotionProfile, setOutput.value);
+	  }
+
+	  public void processBuffer() {
+		_talon.processMotionProfileBuffer();
 	  }
 	
 	  
