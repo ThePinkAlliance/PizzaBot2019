@@ -373,8 +373,9 @@ public class MotionProfileClimberDouble {
 	}
 
 	public boolean isMotionProfileDone() {
-		if (_status.activePointValid &&  _status.isLast) {
-			System.out.println("Last point reached!");
+		//if (_status.activePointValid &&  _status.isLast) {
+	    if (_setValue.value == SetValueMotionProfile.Hold.value) {
+			System.out.println("On Hold: state machine says: Last point reached!");
 	        return true;
 		}
 		else

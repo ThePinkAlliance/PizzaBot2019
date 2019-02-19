@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import frc.robot.commands.MotionProfileGroupTest1;
 import frc.robot.commands.MotionProfileGroupTest2;
+import frc.robot.commands.SparkMotorTestMotionMagic;
 
 
 
@@ -78,6 +79,7 @@ public class OI {
   public Joystick base = null; 
   public Button testButton1 = null; 
   public Button testButton2 = null;
+  public Button testButton3 = null;
 	public OI() {
 
     try {
@@ -86,6 +88,7 @@ public class OI {
       base = new Joystick(baseJoystickPort);
       testButton1 = new JoystickButton(base, yButtonNumber);
       testButton2 = new JoystickButton(base, xButtonNumber);
+      testButton3 = new JoystickButton(base, bButtonNumber);
 
       //Enable buttons / actions 
       setupBaseJoystick();
@@ -101,6 +104,7 @@ public class OI {
     if (base != null) {
        testButton1.whenPressed(new MotionProfileGroupTest1());
        testButton2.whenPressed(new MotionProfileGroupTest2());
+       testButton3.whenPressed(new SparkMotorTestMotionMagic());
     }
   }
 	

@@ -161,12 +161,19 @@ public class RobotDashboard {
         }
     }
 
+    public void getSparkMaxData() {
+        if (Robot.m_spark != null) {
+            Robot.m_spark.handleDashboardValues();
+        }
+    }
+
     /**
      * Grabs values from the dashboard on a continuous basis (telelop / autonomous)
      */
     public void getContinuousData() {
         getDriveTrainEncoderPIDValues();
         getDriveTrainNavxPIDValues();
+        getSparkMaxData();
     }
 
     /**
